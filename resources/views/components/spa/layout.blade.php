@@ -19,6 +19,9 @@
             ['Salary', 'banknotes', 'salaries.index', true],
             ['Reports', 'chart-bar', 'reports.index', true],
         ],
+        'Administration' => [
+            ['Users', 'user-group', 'users.index', true],
+        ],
     ];
 @endphp
 
@@ -41,6 +44,7 @@
 
         <flux:sidebar.nav>
             @foreach ($menu as $group => $items)
+                @continue(! $isAdmin && collect($items)->every(fn ($item) => $item[3]))
                 <flux:sidebar.group :heading="$group" class="grid">
                     @foreach ($items as [$label, $icon, $route, $adminOnly])
                         @continue($adminOnly && ! $isAdmin)

@@ -32,6 +32,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'role' => Role::FrontDesk,
+            'is_active' => true,
         ];
     }
 
@@ -53,5 +54,9 @@ class UserFactory extends Factory
     public function frontDesk(): static
     {
         return $this->state(fn () => ['role' => Role::FrontDesk]);
+    }
+    public function inactive(): static
+    {
+        return $this->state(fn () => ['is_active' => false]);
     }
 }
