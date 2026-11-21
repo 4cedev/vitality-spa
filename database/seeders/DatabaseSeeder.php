@@ -15,6 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (! app()->environment('local', 'testing')) {
+            $this->command?->warn('Dev accounts are only seeded in local environments.');
+
+            return;
+        }
+        
         $accounts = [
             ['Owner', 'owner@vitalityspa.test', \App\Enums\Role::Admin],
             ['Front Desk', 'frontdesk@vitalityspa.test', \App\Enums\Role::FrontDesk],
