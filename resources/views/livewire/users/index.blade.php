@@ -68,6 +68,9 @@
                             <flux:badge :color="$user->is_active ? 'green' : 'zinc'">
                                 {{ $user->is_active ? 'Active' : 'Inactive' }}
                             </flux:badge>
+                            @if ($user->must_change_password)
+                                <flux:badge color="amber" class="ml-1">Password change pending</flux:badge>
+                            @endif
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex justify-end gap-2">

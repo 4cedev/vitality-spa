@@ -44,6 +44,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => Role::class,
             'is_active' => 'boolean',
+            'must_change_password' => 'boolean',
         ];
     }
 
@@ -67,5 +68,21 @@ class User extends Authenticatable
     public function isFrontDesk(): bool
     {
         return $this->role === Role::FrontDesk;
+    }
+
+    protected static function booted(): void
+    {
+        // When a password is saved by the account owner (or by a guest through
+        // "forgot password"), the temporary-password flag no longer applies.
+        // An admin resetting someone else's password never clears it.
+        static::saving(function (User $user) {
+            $changedByOwner = auth()->guest() || auth()->id() === $user->id;
+
+            if ($user->isDirty('password')
+                && ! $user->isDirty('must_change_password')
+                && $changedByOwner) {
+                $user->must_change_password = false;
+            }
+        });
     }
 }

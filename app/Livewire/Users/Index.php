@@ -94,6 +94,12 @@ class Index extends Component
 
             if ($this->password !== '') {
                 $user->password = $this->password; // hashed by the model cast
+
+                // Resetting someone else's password forces them to choose a new one.
+                // Changing your own is already your choice.
+                if (! $user->is(auth()->user())) {
+                    $user->must_change_password = true;
+                }
             }
 
             $user->save();
@@ -107,6 +113,7 @@ class Index extends Component
                 'role' => Role::from($this->role),
                 'is_active' => true,
                 'email_verified_at' => now(),
+                'must_change_password' => true,
             ])->save();
 
             $this->status = "{$user->name} was added.";
