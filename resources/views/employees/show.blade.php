@@ -7,6 +7,10 @@
 
 <x-spa.layout :title="$employee->full_name" :subtitle="$employee->employee_id">
     <div class="max-w-3xl space-y-6">
+        @if (session('status'))
+            <flux:callout variant="success" icon="check-circle" :heading="session('status')" />
+        @endif
+        
         <div class="flex flex-wrap items-center justify-between gap-2">
             <flux:button icon="arrow-left" :href="route('employees.index')">Back to Employee Records</flux:button>
             <flux:button variant="primary" icon="pencil-square" :href="route('employees.edit', $employee)">Edit</flux:button>
