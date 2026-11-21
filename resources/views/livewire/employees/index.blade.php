@@ -2,6 +2,9 @@
     @if (session('status'))
         <flux:callout variant="success" icon="check-circle" :heading="session('status')" />
     @endif
+    @if ($notice)
+        <flux:callout variant="success" icon="check-circle" :heading="$notice" />
+    @endif
 
     <div class="flex items-center justify-between gap-4">
         <flux:text>
@@ -38,6 +41,14 @@
                 </flux:select>
             </div>
 
+            <div class="w-full sm:w-44">
+                <flux:select wire:model.live="statusFilter" aria-label="Filter by status">
+                    <flux:select.option value="">All statuses</flux:select.option>
+                    <flux:select.option value="active">Active only</flux:select.option>
+                    <flux:select.option value="inactive">Inactive only</flux:select.option>
+                </flux:select>
+            </div>
+
             @if ($this->filtersActive)
                 <flux:button icon="x-mark" wire:click="resetFilters">Reset</flux:button>
             @endif
@@ -49,7 +60,7 @@
             <div class="rounded-xl border border-dashed border-zinc-300 px-6 py-16 text-center dark:border-zinc-600">
                 <flux:icon name="magnifying-glass" class="mx-auto mb-3 size-10 text-zinc-400" />
                 <flux:heading size="lg">No matching employees</flux:heading>
-                <flux:text class="mt-1">Try a different name, Employee ID or job title.</flux:text>
+                <flux:text class="mt-1">Try a different name, Employee ID, job title or status.</flux:text>
                 <flux:button class="mt-4" icon="x-mark" wire:click="resetFilters">Reset search and filter</flux:button>
             </div>
         @else
@@ -74,6 +85,7 @@
                         <th class="px-4 py-3 font-medium">Full Name</th>
                         <th class="px-4 py-3 font-medium">Job Title</th>
                         <th class="px-4 py-3 font-medium">Contact Number</th>
+                        <th class="px-4 py-3 font-medium">Status</th>
                         <th class="px-4 py-3 text-right font-medium">Actions</th>
                     </tr>
                 </thead>
@@ -85,9 +97,24 @@
                             <td class="px-4 py-3">{{ $employee->job_title }}</td>
                             <td class="px-4 py-3">{{ $employee->contact_number ?: '—' }}</td>
                             <td class="px-4 py-3">
+                                <flux:badge :color="$employee->is_active ? 'green' : 'zinc'">
+                                    {{ $employee->is_active ? 'Active' : 'Inactive' }}
+                                </flux:badge>
+                            </td>
+                            <td class="px-4 py-3">
                                 <div class="flex justify-end gap-2">
                                     <flux:button size="sm" icon="eye" :href="route('employees.show', $employee)">View</flux:button>
                                     <flux:button size="sm" icon="pencil-square" :href="route('employees.edit', $employee)">Edit</flux:button>
+
+                                    @if ($employee->is_active)
+                                        <flux:button size="sm" variant="danger"
+                                            wire:click="toggleActive({{ $employee->id }})"
+                                            wire:confirm="Deactivate {{ $employee->full_name }}? Their record and history are kept.">
+                                            Deactivate
+                                        </flux:button>
+                                    @else
+                                        <flux:button size="sm" wire:click="toggleActive({{ $employee->id }})">Reactivate</flux:button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

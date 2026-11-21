@@ -19,13 +19,17 @@ class Index extends Component
     #[Url(as: 'job', except: '')]
     public string $jobTitle = '';
 
-    // Runs on every request to this component, including searches and pagination.
+    #[Url(as: 'status', except: '')]
+    public string $statusFilter = '';
+
+    public ?string $notice = null;
+
+    // Runs on every request to this component, including button clicks.
     public function boot(): void
     {
         Gate::authorize('admin');
     }
 
-    // A new search or filter always starts again from page 1.
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -36,16 +40,32 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function updatedStatusFilter(): void
+    {
+        $this->resetPage();
+    }
+
     public function resetFilters(): void
     {
-        $this->reset(['search', 'jobTitle']);
+        $this->reset(['search', 'jobTitle', 'statusFilter']);
         $this->resetPage();
+    }
+
+    public function toggleActive(int $id): void
+    {
+        $employee = Employee::findOrFail($id);
+
+        $employee->forceFill(['is_active' => ! $employee->is_active])->save();
+
+        $this->notice = $employee->is_active
+            ? "{$employee->full_name} was reactivated."
+            : "{$employee->full_name} was deactivated.";
     }
 
     #[Computed]
     public function filtersActive(): bool
     {
-        return trim($this->search) !== '' || $this->jobTitle !== '';
+        return trim($this->search) !== '' || $this->jobTitle !== '' || $this->statusFilter !== '';
     }
 
     #[Computed]
@@ -79,6 +99,8 @@ class Index extends Component
                     ->orWhereRaw("employee_id LIKE ? ESCAPE '!'", [$like])
             ))
             ->when($this->jobTitle !== '', fn ($query) => $query->where('job_title', $this->jobTitle))
+            ->when($this->statusFilter === 'active', fn ($query) => $query->where('is_active', true))
+            ->when($this->statusFilter === 'inactive', fn ($query) => $query->where('is_active', false))
             ->orderBy('id')
             ->paginate(10);
     }

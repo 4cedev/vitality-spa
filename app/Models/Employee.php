@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class Employee extends Model
 {
@@ -28,6 +29,7 @@ class Employee extends Model
     {
         return [
             'birthdate' => 'date',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -38,6 +40,15 @@ class Employee extends Model
                 $employee->employee_id = static::nextEmployeeId();
             }
         });
+    }
+
+    protected $attributes = [
+    'is_active' => true,
+    ];
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 
     /**

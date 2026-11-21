@@ -10,10 +10,14 @@
         @if (session('status'))
             <flux:callout variant="success" icon="check-circle" :heading="session('status')" />
         @endif
-        
-        <div class="flex flex-wrap items-center justify-between gap-2">
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
             <flux:button icon="arrow-left" :href="route('employees.index')">Back to Employee Records</flux:button>
-            <flux:button variant="primary" icon="pencil-square" :href="route('employees.edit', $employee)">Edit</flux:button>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <livewire:employees.status-toggle :employee="$employee" />
+                <flux:button variant="primary" icon="pencil-square" :href="route('employees.edit', $employee)">Edit</flux:button>
+            </div>
         </div>
 
         <div class="rounded-xl border border-zinc-200 p-6 dark:border-zinc-700">

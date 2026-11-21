@@ -27,6 +27,12 @@ class EmployeeFactory extends Factory
             'contact_number' => '09'.fake()->numerify('#########'),
             'email' => fake()->unique()->safeEmail(),
             'address' => fake()->streetAddress(),
+            'is_active' => true,
         ];
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn () => ['is_active' => false]);
     }
 }
