@@ -52,4 +52,9 @@ class Employee extends Model
         return self::ID_PREFIX
             .str_pad((string) ($number + 1), self::ID_MIN_DIGITS, '0', STR_PAD_LEFT);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'employee_id';
+    }
 }
