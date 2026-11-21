@@ -1,4 +1,7 @@
 <div class="space-y-6">
+    @if (session('status'))
+        <flux:callout variant="success" icon="check-circle" :heading="session('status')" />
+    @endif
     <div class="flex items-center justify-between gap-4">
         <flux:text>
             {{ $this->employees->total() }} {{ Str::plural('employee', $this->employees->total()) }} registered

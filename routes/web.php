@@ -15,6 +15,7 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
     Route::view('users', 'users.index')->name('users.index');
 
     Route::view('employees', 'employees.index')->name('employees.index');
+    Route::view('employees/create', 'employees.create')->name('employees.create');
 
     Route::get('employees/{employee}', fn (Employee $employee) => view('employees.show', ['employee' => $employee]))
         ->name('employees.show');
